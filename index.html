@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -255,12 +256,13 @@ inputImage.addEventListener("change", (event) => {
   updateRectangle();
 
   document.getElementById('downloadBtn').addEventListener('click', function() {
-    downloadCanvasAsImage(canvasDownload, "Twibon-Download - " + ((Date.now()).toString().slice(-4) + ": " + Math.random()).toString() + ".png", resolusi, resolusi);
+    downloadCanvasAsImage(canvasDownload, `Twibon-Download_${((Date.now()).toString().slice(-4) + ": " + Math.random()).toString()}.png`, resolusi, resolusi);
   });
 
   function downloadCanvasAsImage(canvasId, filename, width, height) {
     const canvas = document.querySelector(canvasId);
-
+    downBtn.setAttribute("disabled", true);
+    downBtn.innerText = "Loading..."
     const tempCanvas = document.createElement('canvas');
     tempCanvas.width = width;
     tempCanvas.height = height;
@@ -274,6 +276,8 @@ inputImage.addEventListener("change", (event) => {
       link.download = filename;
       link.href = image;
       link.click();
+      downBtn.removeAttribute('disabled');
+    downBtn.innerText = "Unduh Twibonez"
     }, 100)
   }
 </script>
