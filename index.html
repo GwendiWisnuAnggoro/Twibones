@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -115,7 +114,7 @@
   </div>
 <script>
   let canvasDownload = "#canvas";
-  let resolusi = 1920;
+  let resolusi = 1080;
 
 
 var data = {
@@ -144,8 +143,8 @@ Y.max = resolusi;
 Y.min = -resolusi;
 
 scales.value = 100;
-scales.max = 600;
-scales.min = 50;
+scales.max = 300;
+scales.min = 10;
 
 data.x = X.value;
 data.y = Y.value;
@@ -229,8 +228,8 @@ inputImage.addEventListener("change", (event) => {
       let ex = data.x;
       let ye = data.y;
       let Scale = data.scale;
-      let newWidth = img.width * Scale + resolusi;
-      let newHeight = img.height * Scale + resolusi;
+      let newWidth = img.width * Scale;
+      let newHeight = img.height * Scale;
       let newXPos = ex;
       let newYPos = ye;
       
