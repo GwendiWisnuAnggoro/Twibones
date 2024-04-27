@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Web Twibon</title>
+  <style>
+    *{
+      margin: 0;
+      padding: 0;
+    }
+    .container{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100vh;
+    }
+    .isi{
+      width: auto;
+      height: auto;
+      border: 1px solid black;
+      border-radius: 5px;
+      padding: 30px;
+      padding-top: 10px;
+    }
+    #canvas{
+      width: 400px;
+      height: 400px;
+      -webkit-box-shadow: 0px 0px 10px 1px rgba(66, 68, 90, 1);
+      -moz-box-shadow: 0px 0px 10px 1px rgba(66, 68, 90, 1);
+      box-shadow: 0px 0px 10px 1px rgba(66, 68, 90, 1);
+    }
+    img{
+      width: 400px;
+      height: 400px;
+    }
+    h1{
+      margin: 20px;
+      text-align: center;
+    }
+    .btnPilih{
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #pilihImage {
+      width: 50%;
+      height: 50px;
+      margin-top: 20px;
+      background: #00ff00;
+      font-size: 15px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    }
+    
+    #downloadBtn{
+      display: none;
+      margin-left: 10px;
+      width: 50%;
+      height: 50px;
+      margin-top: 20px;
+      background: cyan;
+      font-size: 15px;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    }
+    
+    #ambilImage{
+      display: none;
+    }
+    .inputs{
+      display: none;
+      margin-top: 20px;
+    }
+    #X, #Y {
+      width: 42%;
+    }
+    #scale{
+      width: 86%;
+    }
+    .gambarP{
+      position: absolute;
+      z-index: 6;
+      opacity: .5;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="isi">
+      <h1>Twibonez</h1>
+      <div class="tranpTwibon">
+        <div class="gambarP">
+        <img src="image1.png">
+        </div>
+      </div>
+      <canvas id="canvas"></canvas> <br>
+      <div class="btnPilih">
+        <button id="pilihImage" type="button">Pilih Gambar</button>
+        <button id="downloadBtn" type="button">Unduh Twibonez</button>
+        <input type="file" id="ambilImage">
+      </div>
+      <div class="inputs">
+        <label for="X">X:</label>
+        <input type="range" id="X">
+        <label for="X"style="margin-left: 15px;">Y:</label>
+        <input type="range" id="Y"> <br><br>
+        <label for="scale">Scale:</label>
+        <input type="range" id="scale">
+      </div>
+    </div>
+  </div>
+<script>
+  let canvasDownload = "#canvas";
+  let resolusi = 1920;
+
+
+var data = {
+  "x": 0,
+  "y": 0,
+  "scale": 0,
+  "img": null
+};
+
+var dilepas = true;
+
+let X = document.querySelector("#X"),
+    Y = document.querySelector("#Y"),
+    scales = document.querySelector("#scale"),
+    pilihImage = document.querySelector("#pilihImage"),
+    inputImage = document.querySelector("#ambilImage"),
+    downBtn = document.querySelector("#downloadBtn"),
+    inputs = document.querySelector(".inputs")
+
+X.value = 0;
+X.max = resolusi;
+X.min = -resolusi;
+
+Y.value = 0;
+Y.max = resolusi *2;
+Y.min = -resolusi *2;
+
+scales.value = 100;
+scales.max = resolusi / 10 * 2;
+scales.min = -(resolusi / 10);
+
+data.x = X.value;
+data.y = Y.value;
+data.scale = 1;
+
+console.log(data)
+
+let inp = [X, Y, scales]
+inp.forEach(el=>{
+  el.addEventListener("input", ()=>{
+    let vX = X.value, 
+        vY = Y.value,
+        vS = scales.value / 100;
+    data.x = vX;
+    data.y = vY;
+    dilepas = false;
+    data.scale = vS;
+    updateRectangle(data)
+    console.log("X: " + vX)
+    console.log("Y: " + vY)
+    console.log("Scale: " + vS)
+    
+  })
+  
+  el.addEventListener("change", ()=>{
+    dilepas = true;
+    updateRectangle(data)
+  })
+})
+
+pilihImage.addEventListener("click", pilih)
+ function pilih(){
+   inputImage.click()
+ }
+ 
+inputImage.addEventListener("change", (event) => {
+  const selectedFile = event.target.files[0];
+  
+  if (selectedFile) {
+    const imageURL = URL.createObjectURL(selectedFile);
+    if(imageURL){
+      data.img = imageURL;
+      updateRectangle(data)
+      pilihImage.innerText = ""
+      pilihImage.innerText = "Ganti Gambar"
+      downloadBtn.style.display = "block";
+      inputs.style.display = "block"
+    }
+    
+    
+  } else {
+    console.log("Tidak ada file gambar yang dipilih.");
+  }
+});
+
+  let cs = document.querySelector(canvasDownload);
+  cs.width = resolusi;
+  cs.height = resolusi;
+
+
+  function tampilkanGambar(canvasSelector, url, zIndex) {
+    var canvas = document.querySelector(canvasSelector);
+    var ctx = canvas.getContext('2d');
+
+    canvas.style.position = 'relative';
+    canvas.style.zIndex = zIndex;
+
+    var img = new Image();
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.src = url;
+  }
+
+  function updateRectangle(data) {
+  let c = document.querySelector(canvasDownload);
+  let ctx = c.getContext("2d");
+  if (data) {
+    let img = new Image();
+    img.onload = function() {
+      let ex = data.x;
+      let ye = data.y;
+      let Scale = data.scale;
+      let newWidth = img.width * Scale + resolusi;
+      let newHeight = img.height * Scale + resolusi;
+      let newXPos = ex;
+      let newYPos = ye;
+      
+      ctx.clearRect(0, 0, c.width, c.height);
+      ctx.fillStyle = "white";
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.drawImage(img, newXPos, newYPos, newWidth, newHeight);
+      if(dilepas){
+        tampilkanGambar(canvasDownload, "image1.png", 5);
+      }
+      
+      
+    };
+    img.src = data.img;
+  } else {
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, c.width, c.height);
+    tampilkanGambar(canvasDownload, "image1.png", 5);
+    
+  }
+}
+
+  updateRectangle();
+
+  document.getElementById('downloadBtn').addEventListener('click', function() {
+    downloadCanvasAsImage(canvasDownload, 'Twibon-Download.png', resolusi, resolusi);
+  });
+
+  function downloadCanvasAsImage(canvasId, filename, width, height) {
+    const canvas = document.querySelector(canvasId);
+
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    setTimeout(() => {
+      tempCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, width, height);
+      const image = tempCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+
+      const link = document.createElement('a');
+      link.download = filename;
+      link.href = image;
+      link.click();
+    }, 100)
+  }
+</script>
+</body>
+</html>
