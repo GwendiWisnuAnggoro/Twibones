@@ -255,7 +255,7 @@ inputImage.addEventListener("change", (event) => {
   updateRectangle();
 
   document.getElementById('downloadBtn').addEventListener('click', function() {
-    downloadCanvasAsImage(canvasDownload, 'Twibon-Download.png', resolusi, resolusi);
+    downloadCanvasAsImage(canvasDownload, "Twibon-Download - " + ((Date.now()).toString().slice(-4) + ": " + Math.random()).toString() + ".png", resolusi, resolusi);
   });
 
   function downloadCanvasAsImage(canvasId, filename, width, height) {
