@@ -269,6 +269,7 @@ inputImage.addEventListener("change", (event) => {
     const tempCtx = tempCanvas.getContext('2d');
     
     setTimeout(() => {
+      downBtn.innerText = "Mengunduh..."
       tempCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, width, height);
       const image = tempCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
 
@@ -276,8 +277,12 @@ inputImage.addEventListener("change", (event) => {
       link.download = filename;
       link.href = image;
       link.click();
-      downBtn.removeAttribute('disabled');
-    downBtn.innerText = "Unduh Twibonez"
+      
+      setTimeout(()=>{
+        downBtn.removeAttribute('disabled');
+        downBtn.innerText = "Unduh Twibonez"
+      }, 1000)
+    
     }, 100)
   }
 </script>
