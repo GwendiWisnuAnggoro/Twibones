@@ -83,7 +83,7 @@
     }
     .gambarP{
       position: absolute;
-      z-index: 6;
+      z-index: 1;
       opacity: .5;
     }
   </style>
@@ -101,7 +101,7 @@
       <div class="btnPilih">
         <button id="pilihImage" type="button">Pilih Gambar</button>
         <button id="downloadBtn" type="button">Unduh Twibonez</button>
-        <input type="file" id="ambilImage">
+        <input type="file" accept="image/*" id="ambilImage">
       </div>
       <div class="inputs">
         <label for="X">X:</label>
@@ -206,16 +206,22 @@ inputImage.addEventListener("change", (event) => {
   cs.height = resolusi;
 
 
-  function tampilkanGambar(canvasSelector, url, zIndex) {
+  function tampilkanGambar(canvasSelector, url) {
     var canvas = document.querySelector(canvasSelector);
     var ctx = canvas.getContext('2d');
 
-    canvas.style.position = 'relative';
-    canvas.style.zIndex = zIndex;
 
     var img = new Image();
     img.onload = function() {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.onerror = function () {
+      var isInternetStable = navigator.onLine;
+      if (isInternetStable) {
+          alert("Twibon gagal dimuat!!! Pastikan koneksi internet Anda stabil.");
+      } else {
+          alert("Maaf, terjadi kesalahan saat memuat gambar twibon.");
+      }
     };
     img.src = url;
   }
@@ -239,17 +245,24 @@ inputImage.addEventListener("change", (event) => {
       ctx.fillRect(0, 0, c.width, c.height);
       ctx.drawImage(img, newXPos, newYPos, newWidth, newHeight);
       if(dilepas){
-        tampilkanGambar(canvasDownload, "image1.png", 5);
+        tampilkanGambar(canvasDownload, "image1.png");
+      } 
+      
+      
+    };
+    img.onerror = function () {
+    var isInternetStable = navigator.onLine;
+      if (isInternetStable) {
+          alert("Maaf, Gambar gagal dimuat. Pastikan koneksi internet Anda stabil.");
+      } else {
+          alert("Maaf, terjadi kesalahan saat memuat gambar. Silahkan Coba Lagi...");
       }
-      
-      
     };
     img.src = data.img;
   } else {
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, c.width, c.height);
-    tampilkanGambar(canvasDownload, "image1.png", 5);
-    
+    tampilkanGambar(canvasDownload, "image1.png");
   }
 }
 
