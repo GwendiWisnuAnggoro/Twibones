@@ -458,6 +458,9 @@
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = resolusi;
       tempCanvas.height = resolusi;
+      tempCtx.rect(0,0,resolusi,resolusi)
+      tempCtx.fillStyle = "white";
+      tempCtx.fill()
       const tempCtx = tempCanvas.getContext('2d');
   
       // Gambar user image dengan rotasi
@@ -503,9 +506,5 @@
       drawCanvas()
     }, 1000)
   </script>
-
-  <!-- tempCtx.rect(0,0,resolusi,resolusi)
-  tempCtx.fillStyle = "white";
-  tempCtx.fill() -->
 </body>
 </html>
