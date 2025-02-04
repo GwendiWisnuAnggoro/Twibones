@@ -3,301 +3,509 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Web Twibon</title>
+  <title>YAKKUM Twibones</title>
   <style>
-    *{
+    @import url('https://fonts.googleapis.com/css2?family=Signika:wght@300..700&display=swap');
+    * {
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
+      font-family: "Signika";
     }
-    .container{
+    .container {
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
+      background: #f0f0f0;
       width: 100%;
       height: 100vh;
+      position: fixed;
+      overflow: hidden;
     }
-    .isi{
-      width: auto;
-      height: auto;
-      border: 1px solid black;
-      border-radius: 5px;
-      padding: 30px;
-      padding-top: 10px;
+    .isi {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
-    #canvas{
+    #canvas {
       width: 400px;
       height: 400px;
-      -webkit-box-shadow: 0px 0px 10px 1px rgba(66, 68, 90, 1);
-      -moz-box-shadow: 0px 0px 10px 1px rgba(66, 68, 90, 1);
-      box-shadow: 0px 0px 10px 1px rgba(66, 68, 90, 1);
+      border: 2px solid #ddd;
     }
-    img{
-      width: 400px;
-      height: 400px;
-    }
-    h1{
-      margin: 20px;
-      text-align: center;
-    }
-    .btnPilih{
-      width: 100%;
+    .btn-group {
+      margin-top: 15px;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      gap: 10px;
     }
-    #pilihImage {
-      width: 50%;
-      height: 50px;
-      margin-top: 20px;
-      background: #00ff00;
-      font-size: 15px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
     }
-    
-    #downloadBtn{
-      display: none;
-      margin-left: 10px;
-      width: 50%;
-      height: 50px;
-      margin-top: 20px;
-      background: cyan;
-      font-size: 15px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
-    }
-    
-    #ambilImage{
-      display: none;
-    }
-    .inputs{
-      display: none;
-      margin-top: 20px;
-    }
-    #X, #Y {
-      width: 42%;
-    }
-    #scale{
-      width: 86%;
-    }
-    .gambarP{
+    #pilihImage { background: #4CAF50; color: white; }
+    #editBtn { background: #2196F3; color: white; display: none; z-index: 1;}
+    #downloadBtn { background: #f44336; color: white; display: none; }
+    .ui-container {
       position: absolute;
-      z-index: 1;
-      opacity: .5;
+      pointer-events: none;
+      display: none;
+    }
+    .uiMovement {
+      position: absolute;
+      border: 2px solid #2196F3;
+      cursor: move;
+      pointer-events: all;
+    }
+    .circle {
+      position: absolute;
+      width: 15px;
+      height: 15px;
+      background: #2196F3;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .circle:nth-child(1) { top: -8px; left: -8px; }
+    .circle:nth-child(2) { top: -8px; right: -8px; }
+    .circle:nth-child(3) { bottom: -8px; left: -8px; }
+    .circle:nth-child(4) { bottom: -8px; right: -8px; }
+
+    .rotateUI{display: block; width: 100%; margin-left: 20px; display: none; z-index: 1;}
+    .rotateUI input{
+      width: 80%;
+    }
+    .rotateUI button{
+      width: 50px;
+      height: 50px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="isi">
-      <h1>Twibonez</h1>
-      <div class="tranpTwibon">
-        <div class="gambarP">
-        <img src="image1.png">
+      <h1 style="text-align: center; margin-bottom: 15px;">TWIBONE</h1>
+      <div class="ui-container">
+        <div class="uiMovement">
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
+          <div class="circle"></div>
         </div>
       </div>
-      <canvas id="canvas"></canvas> <br>
-      <div class="btnPilih">
-        <button id="pilihImage" type="button">Pilih Gambar</button>
-        <button id="downloadBtn" type="button">Unduh Twibonez</button>
-        <input type="file" accept="image/*" id="ambilImage">
-      </div>
-      <div class="inputs">
-        <label for="X">X:</label>
-        <input type="range" id="X">
-        <label for="X"style="margin-left: 15px;">Y:</label>
-        <input type="range" id="Y"> <br><br>
-        <label for="scale">Scale:</label>
-        <input type="range" id="scale">
+      <canvas id="canvas"></canvas>
+      <div class="btn-group">
+        <button id="pilihImage">Pilih Gambar</button>
+        <button id="editBtn">Edit Image</button>
+        <button id="downloadBtn">Unduh</button>
+        <input type="file" id="ambilImage" hidden accept="image/*">
+        <div class="rotateUI">
+          <label for="rotate">Rotate: <span>0°</span></label> <br>
+          <input type="range" name="rotate" id="rotateImage" min="-360" value="0" max="360"> <br>
+          <button id="aturDeggree" type="button">-90°</button>
+          <button id="aturDeggree" type="button">-45°</button>
+          <button id="aturDeggree" type="button">0°</button>
+          <button id="aturDeggree" type="button">45°</button>
+          <button id="aturDeggree" type="button">90°</button>
+        </div>
       </div>
     </div>
   </div>
-<script>
-  let canvasDownload = "#canvas";
-  let resolusi = 1080;
 
-
-var data = {
-  "x": 0,
-  "y": 0,
-  "scale": 0,
-  "img": null
-};
-
-var dilepas = true;
-
-let X = document.querySelector("#X"),
-    Y = document.querySelector("#Y"),
-    scales = document.querySelector("#scale"),
-    pilihImage = document.querySelector("#pilihImage"),
-    inputImage = document.querySelector("#ambilImage"),
-    downBtn = document.querySelector("#downloadBtn"),
-    inputs = document.querySelector(".inputs")
-
-X.value = 0;
-X.max = resolusi;
-X.min = -resolusi;
-
-Y.value = 0;
-Y.max = resolusi;
-Y.min = -resolusi;
-
-scales.value = 100;
-scales.max = 300;
-scales.min = 10;
-
-data.x = X.value;
-data.y = Y.value;
-data.scale = 1;
-
-console.log(data)
-
-let inp = [X, Y, scales]
-inp.forEach(el=>{
-  el.addEventListener("input", ()=>{
-    let vX = X.value, 
-        vY = Y.value,
-        vS = scales.value / 100;
-    data.x = vX;
-    data.y = vY;
-    dilepas = false;
-    data.scale = vS;
-    updateRectangle(data)
-    console.log("X: " + vX)
-    console.log("Y: " + vY)
-    console.log("Scale: " + vS)
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const resolusi = 1080;
+    let twibonFrame = new Image();
     
-  })
+    // Inisialisasi canvas
+    canvas.width = resolusi;
+    canvas.height = resolusi;
+    
+    // Load twibon frame
+    twibonFrame.src = 'image1.png';
+    
+    // State management
+    let state = {
+      userImage: null,
+      position: { x: 0, y: 0 },
+      scale: 1,
+      aspectRatio: 1,
+      isEditing: false,
+      offset: { x: 0, y: 0 },
+      rotate: 0
+    };
   
-  el.addEventListener("change", ()=>{
-    dilepas = true;
-    updateRectangle(data)
-  })
-})
-
-pilihImage.addEventListener("click", pilih)
- function pilih(){
-   inputImage.click()
- }
- 
-inputImage.addEventListener("change", (event) => {
-  const selectedFile = event.target.files[0];
+    // UI Elements
+    const uiContainer = document.querySelector('.ui-container');
+    const uiMovement = document.querySelector('.uiMovement');
+    const circles = document.querySelectorAll('.circle');
+    const rotate = document.querySelector('#rotateImage')
+    
+    // Event listeners
+    document.getElementById('pilihImage').addEventListener('click', () => {
+      document.getElementById('ambilImage').click();
+    });
   
-  if (selectedFile) {
-    const imageURL = URL.createObjectURL(selectedFile);
-    if(imageURL){
-      data.img = imageURL;
-      updateRectangle(data)
-      pilihImage.innerText = ""
-      pilihImage.innerText = "Ganti Gambar"
-      downloadBtn.style.display = "block";
-      inputs.style.display = "block"
+    document.getElementById('editBtn').addEventListener('click', toggleEditMode);
+    document.getElementById('ambilImage').addEventListener('change', handleImageUpload);
+    document.getElementById('downloadBtn').addEventListener('click', downloadImage);
+  
+    // Fungsi utama
+    function handleImageUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+  
+      const reader = new FileReader();
+      reader.onload = (event) => {
+          state.userImage = new Image();
+          state.userImage.onload = () => {
+              state.aspectRatio = state.userImage.naturalWidth / state.userImage.naturalHeight;
+              resetPosition();
+              document.getElementById('editBtn').style.display = 'block';
+              document.getElementById('downloadBtn').style.display = 'block';
+              
+              // Auto show image
+              drawCanvas();
+          };
+          state.userImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
     }
-    
-    
-  } else {
-    console.log("Tidak ada file gambar yang dipilih.");
-  }
-});
-
-  let cs = document.querySelector(canvasDownload);
-  cs.width = resolusi;
-  cs.height = resolusi;
-
-
-  function tampilkanGambar(canvasSelector, url) {
-    var canvas = document.querySelector(canvasSelector);
-    var ctx = canvas.getContext('2d');
-
-
-    var img = new Image();
-    img.onload = function() {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    };
-    img.onerror = function () {
-      var isInternetStable = navigator.onLine;
-      if (isInternetStable) {
-          alert("Twibon gagal dimuat!!! Pastikan koneksi internet Anda stabil.");
+  
+    function toggleEditMode() {
+      state.isEditing = !state.isEditing;
+      uiContainer.style.display = state.isEditing ? 'block' : 'none';
+      document.getElementById('editBtn').textContent = state.isEditing ? 'Simpan' : 'Edit Image';
+      document.getElementById('downloadBtn').style.display = state.isEditing ? 'none' : 'block';
+      document.getElementById('pilihImage').style.display = state.isEditing ? 'none' : 'block';
+      drawCanvas();
+    }
+  
+    let rotateUI = document.querySelector(".rotateUI")
+    function drawCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      if (state.userImage) {
+        // Gambar user
+        ctx.save();
+        if (state.isEditing) {
+          ctx.globalAlpha = 1;
+          drawUserImage();
+  
+          // Gambar twibon transparan
+          ctx.globalAlpha = 0.3;
+          ctx.drawImage(twibonFrame, 0, 0, canvas.width, canvas.height);
+          rotateUI.style.display = "block"
+        } else {
+          // Gambar twibon di atas
+          drawUserImage();
+          ctx.globalAlpha = 1;
+          ctx.drawImage(twibonFrame, 0, 0, canvas.width, canvas.height);
+          rotateUI.style.display = "none"
+        }
+        ctx.restore();
       } else {
-          alert("Maaf, terjadi kesalahan saat memuat gambar twibon.");
+        ctx.drawImage(twibonFrame, 0, 0, canvas.width, canvas.height);
       }
-    };
-    img.src = url;
-  }
+      
+      updateUIControls();
+    }
+  
+    function drawUserImage() {
+      const imgWidth = state.userImage.naturalWidth * state.scale;
+      const imgHeight = state.userImage.naturalHeight * state.scale;
+      const radian = (state.rotate * Math.PI) / 180;
+  
+      // Clipping area
+      ctx.beginPath();
+      ctx.rect(0, 0, canvas.width, canvas.height);
+      ctx.clip();
+  
+      // Simpan state canvas sebelum transformasi
+      ctx.save();
+  
+      // Pindahkan titik origin ke tengah gambar
+      ctx.translate(
+        state.position.x + imgWidth / 2,
+        state.position.y + imgHeight / 2
+      );
+  
+      // Rotasi gambar
+      ctx.rotate(radian);
+  
+      // Gambar gambar pengguna dengan anchor point di tengah
+      ctx.drawImage(
+        state.userImage,
+        -imgWidth / 2, // Posisi X relatif terhadap titik tengah
+        -imgHeight / 2, // Posisi Y relatif terhadap titik tengah
+        imgWidth,
+        imgHeight
+      );
+  
+      // Kembalikan state canvas ke sebelum transformasi
+      ctx.restore();
 
-  function updateRectangle(data) {
-  let c = document.querySelector(canvasDownload);
-  let ctx = c.getContext("2d");
-  if (data) {
-    let img = new Image();
-    img.onload = function() {
-      let ex = data.x;
-      let ye = data.y;
-      let Scale = data.scale;
-      let newWidth = img.width * Scale;
-      let newHeight = img.height * Scale;
-      let newXPos = ex;
-      let newYPos = ye;
-      
-      ctx.clearRect(0, 0, c.width, c.height);
-      ctx.fillStyle = "white";
-      ctx.fillRect(0, 0, c.width, c.height);
-      ctx.drawImage(img, newXPos, newYPos, newWidth, newHeight);
-      if(dilepas){
-        tampilkanGambar(canvasDownload, "image1.png");
-      } 
-      
-      
-    };
-    img.onerror = function () {
-    var isInternetStable = navigator.onLine;
-      if (isInternetStable) {
-          alert("Maaf, Gambar gagal dimuat. Pastikan koneksi internet Anda stabil.");
+      updateUIControls();
+  
+      document.getElementById('pilihImage').textContent = "Ganti Image";
+    }
+  
+    function updateUIControls() {
+      if (!state.userImage || !state.isEditing) return;
+
+      const scaleFactor = canvas.offsetWidth / resolusi;
+      const imgWidth = state.userImage.naturalWidth * state.scale * scaleFactor;
+      const imgHeight = state.userImage.naturalHeight * state.scale * scaleFactor;
+
+      // Atur ukuran dan posisi UI scale
+      uiMovement.style.width = `${imgWidth}px`;
+      uiMovement.style.height = `${imgHeight}px`;
+      uiMovement.style.left = `${state.position.x * scaleFactor}px`;
+      uiMovement.style.top = `${state.position.y * scaleFactor}px`;
+
+      // Atur rotasi UI scale
+      uiMovement.style.transform = `rotate(${state.rotate}deg)`;
+      uiMovement.style.transformOrigin = 'center center'; // Pastikan rotasi terjadi di tengah
+    }
+    // Drag & resize system
+    let isDragging = false;
+    let isResizing = false;
+    let startPos = { x: 0, y: 0 };
+    let startSize = { w: 0, h: 0 };
+  
+    function getEventPosition(e) {
+      const rect = canvas.getBoundingClientRect();
+      if (e.touches) {
+        return {
+          x: e.touches[0].clientX - rect.left,
+          y: e.touches[0].clientY - rect.top
+        };
       } else {
-          alert("Maaf, terjadi kesalahan saat memuat gambar. Silahkan Coba Lagi...");
+        return {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top
+        };
       }
-    };
-    img.src = data.img;
-  } else {
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, c.width, c.height);
-    tampilkanGambar(canvasDownload, "image1.png");
-  }
-}
-
-  updateRectangle();
-
-  document.getElementById('downloadBtn').addEventListener('click', function() {
-    downloadCanvasAsImage(canvasDownload, `Twibon-Download_${((Date.now()).toString().slice(-4) + ": " + Math.random()).toString()}.png`, resolusi, resolusi);
-  });
-
-  function downloadCanvasAsImage(canvasId, filename, width, height) {
-    const canvas = document.querySelector(canvasId);
-    downBtn.setAttribute("disabled", true);
-    downBtn.innerText = "Loading..."
-    const tempCanvas = document.createElement('canvas');
-    tempCanvas.width = width;
-    tempCanvas.height = height;
-    const tempCtx = tempCanvas.getContext('2d');
+    }
+  
+    uiMovement.addEventListener('mousedown', (e) => {
+      if (!state.isEditing) return;
+      isDragging = true;
+      startPos = getEventPosition(e);
+      state.offset = { ...state.position };
+    });
+  
+    uiMovement.addEventListener('touchstart', (e) => {
+      if (!state.isEditing) return;
+      isDragging = true;
+      startPos = getEventPosition(e);
+      state.offset = { ...state.position };
+      e.preventDefault(); // Prevent default touch behavior
+    });
+  
+    circles.forEach((circle, index) => {
+      circle.addEventListener('mousedown', (e) => {
+        if (!state.isEditing) return;
+        e.stopPropagation();
+        isResizing = true;
+        startPos = getEventPosition(e);
+        startSize = {
+          w: state.userImage.naturalWidth * state.scale,
+          h: state.userImage.naturalHeight * state.scale
+        };
+        state.offset = { x: state.position.x, y: state.position.y };
+        state.resizeHandle = index; 
+      });
+  
+      circle.addEventListener('touchstart', (e) => {
+        if (!state.isEditing) return;
+        e.stopPropagation();
+        isResizing = true;
+        startPos = getEventPosition(e);
+        startSize = {
+          w: state.userImage.naturalWidth * state.scale,
+          h: state.userImage.naturalHeight * state.scale
+        };
+        state.offset = { x: state.position.x, y: state.position.y };
+        state.resizeHandle = index; 
+        e.preventDefault(); // Prevent default touch behavior
+      });
+    });
+  
+    function handleMove(e) {
+      if (!state.isEditing) return;
+      
+      const rect = canvas.getBoundingClientRect();
+      const scaleFactor = resolusi / canvas.offsetWidth;
+      const currentPos = getEventPosition(e);
+      
+      if (isDragging) {
+        const deltaX = (currentPos.x - startPos.x) * scaleFactor;
+        const deltaY = (currentPos.y - startPos.y) * scaleFactor;
+        
+        state.position.x = state.offset.x + deltaX;
+        state.position.y = state.offset.y + deltaY;
+        
+        drawCanvas();
+      }
+      
+      if (isResizing) {
+        const deltaX = (currentPos.x - startPos.x) * scaleFactor;
+        const deltaY = (currentPos.y - startPos.y) * scaleFactor;
+        
+        let newWidth, newHeight, newX, newY;
+  
+        switch(state.resizeHandle) {
+          case 0: // Top-left
+            newWidth = startSize.w - deltaX;
+            newHeight = newWidth / state.aspectRatio;
+            newX = state.offset.x + deltaX;
+            newY = state.offset.y + (startSize.h - newHeight);
+            break;
+          case 1: // Top-right
+            newWidth = startSize.w + deltaX;
+            newHeight = newWidth / state.aspectRatio;
+            newY = state.offset.y + (startSize.h - newHeight);
+            newX = state.offset.x;
+            break;
+          case 2: // Bottom-left
+            newWidth = startSize.w - deltaX;
+            newHeight = newWidth / state.aspectRatio;
+            newX = state.offset.x + deltaX;
+            newY = state.offset.y;
+            break;
+          case 3: // Bottom-right (default)
+          default:
+            newWidth = startSize.w + deltaX;
+            newHeight = newWidth / state.aspectRatio;
+            newX = state.offset.x;
+            newY = state.offset.y;
+            break;
+        }
+  
+        // Batasi ukuran minimum
+        if(newWidth > 50 && newHeight > 50) {
+          state.scale = newWidth / state.userImage.naturalWidth;
+          state.position.x = newX;
+          state.position.y = newY;
+          drawCanvas();
+        }
+      }
+    }
+  
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('touchmove', handleMove);
+  
+    function handleEnd() {
+      isDragging = false;
+      isResizing = false;
+    }
+  
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchend', handleEnd);
+  
+    function resetPosition() {
+      // Hitung skala berdasarkan lebar canvas
+      const targetWidth = canvas.width; // 1080px
+      state.scale = targetWidth / state.userImage.naturalWidth;
+      
+      // Hitung tinggi setelah scaling
+      const scaledHeight = state.userImage.naturalHeight * state.scale;
+      
+      // Posisi awal
+      state.position.x = 0; // Rata kiri-kanan
+      state.position.y = (canvas.height - scaledHeight) / 2; 
+      
+      // Jika tinggi gambar lebih kecil dari canvas, posisi tetap di tengah
+      if (scaledHeight < canvas.height) {
+          state.position.y = (canvas.height - scaledHeight) / 2;
+      }
+      
+      state.rotate = 0;
+      rotate.value = 0;
+  
+      drawCanvas();
+    }
+  
+    //Rotate System
+    rotate.addEventListener('input', (event) => {
+      textDegree(rotate.value)
+    })
     
-    setTimeout(() => {
-      downBtn.innerText = "Mengunduh..."
-      tempCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, width, height);
-      const image = tempCanvas.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-
+    const aturDeggree = document.querySelectorAll("#aturDeggree")
+    aturDeggree.forEach(elem =>{
+      elem.addEventListener("click", ()=>{
+        textContents = elem.textContent
+        replaces = textContents.replace("°", "")
+        toNumber = Number(replaces)
+        console.log(toNumber)
+        textDegree(toNumber)
+      })
+    })
+    
+    function textDegree(text){
+      const span = document.querySelector('span')
+      span.textContent = `${text}°`
+      rotate.value = text
+      state.rotate = parseInt(rotate.value);
+      drawCanvas();
+    }
+  
+    function downloadImage() {
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = resolusi;
+      tempCanvas.height = resolusi;
+      const tempCtx = tempCanvas.getContext('2d');
+  
+      // Gambar user image dengan rotasi
+      const img = state.userImage;
+      const width = img.naturalWidth * state.scale;
+      const height = img.naturalHeight * state.scale;
+      const radian = (state.rotate * Math.PI) / 180;
+  
+      // Simpan state canvas sebelum transformasi
+      tempCtx.save();
+  
+      // Pindahkan titik origin ke tengah gambar
+      tempCtx.translate(
+        state.position.x + width / 2,
+        state.position.y + height / 2
+      );
+  
+      // Rotasi gambar
+      tempCtx.rotate(radian);
+  
+      // Gambar gambar pengguna dengan anchor point di tengah
+      tempCtx.drawImage(
+        img,
+        -width / 2,
+        -height / 2,
+        width,
+        height
+      );
+  
+      // Kembalikan state canvas ke sebelum transformasi
+      tempCtx.restore();
+  
+      // Draw twibon frame on top
+      tempCtx.drawImage(twibonFrame, 0, 0, resolusi, resolusi);
+  
       const link = document.createElement('a');
-      link.download = filename;
-      link.href = image;
+      link.download = `twibon-${Date.now()}.png`;
+      link.href = tempCanvas.toDataURL();
       link.click();
-      
-      setTimeout(()=>{
-        downBtn.removeAttribute('disabled');
-        downBtn.innerText = "Unduh Twibonez"
-      }, 1000)
-    
-    }, 100)
-  }
-</script>
+    }
+  
+    setTimeout(()=>{
+      drawCanvas()
+    }, 1000)
+  </script>
+
+  <!-- tempCtx.rect(0,0,resolusi,resolusi)
+  tempCtx.fillStyle = "white";
+  tempCtx.fill() -->
 </body>
 </html>
