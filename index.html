@@ -66,12 +66,11 @@
       height: 15px;
       background: #2196F3;
       border-radius: 50%;
-      cursor: pointer;
     }
-    .circle:nth-child(1) { top: -8px; left: -8px; }
-    .circle:nth-child(2) { top: -8px; right: -8px; }
-    .circle:nth-child(3) { bottom: -8px; left: -8px; }
-    .circle:nth-child(4) { bottom: -8px; right: -8px; }
+    .circle:nth-child(1) { top: -8px; left: -8px; cursor: nw-resize;}
+    .circle:nth-child(2) { top: -8px; right: -8px; cursor: nesw-resize;}
+    .circle:nth-child(3) { bottom: -8px; left: -8px; cursor: ne-resize;}
+    .circle:nth-child(4) { bottom: -8px; right: -8px; cursor: nw-resize;}
 
     .rotateUI{display: block; width: 100%; margin-left: 20px; display: none; z-index: 1;}
     .rotateUI input{
@@ -81,6 +80,8 @@
       width: 50px;
       height: 50px;
     }
+
+
   </style>
 </head>
 <body>
